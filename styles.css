@@ -41,13 +41,27 @@ body {
     text-align: center;
 }
 
+.modal h2 {
+    font-size: 2em;
+    color: #ffcc00; /* Aranysárga szín a győztes kiíráshoz */
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 6px rgba(255, 204, 0, 0.6);
+}
+
 button {
     margin-top: 10px;
-    padding: 5px 10px;
+    padding: 10px 20px;
+    width: 200px;
+    font-size: 1em;
     cursor: pointer;
     background-color: #00ff00; /* Élénk zöld gomb */
     border: none;
     border-radius: 5px;
-    font-style: bold;
-    color: #000; /* Fekete szöveg */
+    font-weight: bold;
+    color: #000;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #66ff66; /* Világosabb zöld hover hatás */
 }
