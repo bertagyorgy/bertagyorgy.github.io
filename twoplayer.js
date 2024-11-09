@@ -8,9 +8,12 @@ let currentPlayer = "X";
 let isGameOver = false; // Játék állapotának követése
 
 // Tábla kirajzolása
+// Tábla kirajzolása
 function drawBoard() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "#ff6600";
+    ctx.strokeStyle = "#ff6600"; // Rácsvonal színe
+    ctx.lineWidth = 1;  // Rácsvonal vastagságának visszaállítása
+
     for (let i = 0; i <= boardSize; i++) {
         ctx.beginPath();
         ctx.moveTo(i * cellSize, 0);
@@ -99,12 +102,13 @@ function showWinner(winner) {
 // Játék újraindítása
 function restartGame() {
     isGameOver = false; // Játék újraindítása
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    board = Array.from({ length: boardSize }, () => Array(boardSize).fill(null));
-    document.getElementById("winnerModal").style.display = "none";
-    currentPlayer = "X";
-    drawBoard();
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Eltüntetjük a régi rajzokat
+    board = Array.from({ length: boardSize }, () => Array(boardSize).fill(null)); // Új tábla
+    document.getElementById("winnerModal").style.display = "none"; // Nyertes ablak elrejtése
+    currentPlayer = "X"; // Kezdő játékos
+    drawBoard(); // Új tábla kirajzolása
 }
+
 
 // Lépés elhelyezése csak akkor, ha a játék nincs lezárva
 canvas.addEventListener("click", (e) => {
