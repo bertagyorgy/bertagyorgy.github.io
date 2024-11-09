@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amőba Bot Elleni Játék</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <canvas id="drawingCanvas" width="600" height="600"></canvas>
+    <div id="winnerModal" class="modal">
+        <div class="modal-content">
+            <p id="winnerText"></p>
+            <button onclick="restartGame()">Új játék</button>
+            <button onclick="window.location.href='index.html'">Vissza a főmenübe</button>
+        </div>
+    </div>
+    <script src="loadDifficulty.js"></script> <!-- Ez a script kezeli a nehézségi szint betöltését -->
+</body>
+</html>
