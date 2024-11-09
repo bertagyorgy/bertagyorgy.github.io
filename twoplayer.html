@@ -3,18 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Végtelen Amőba - Kétjátékos mód</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <title>Infinity Grid - Kétjátékos mód</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <canvas id="drawingCanvas" width="600" height="600"></canvas>
+    
+    <!-- Modal győzelmi üzenethez -->
     <div id="winnerModal" class="modal">
         <div class="modal-content">
-            <p id="winnerText"></p>
-            <button onclick="closeModal()">Új Játék</button>
+            <h2 id="winnerText"></h2>
+            <button onclick="restartGame()">Új Játék</button><br>
+            <button onclick="window.location.href='index.html'">Vissza a főmenübe</button>
         </div>
     </div>
-    <script src="script.js"></script> <!-- Eredeti script -->
+    
+    <script src="twoplayer.js"></script>
 </body>
 </html>
