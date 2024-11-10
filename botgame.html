@@ -3,18 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amőba Bot Elleni Játék</title>
+    <title>Bot Játék</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div class="mode-indicator" id="modeIndicator">Játékmód: Bot</div> <!-- Játékmód kijelzés -->
     <canvas id="drawingCanvas" width="600" height="600"></canvas>
+    <div class="exit-button" onclick="window.location.href='index.html'">Kilépés</div>
     <div id="winnerModal" class="modal">
         <div class="modal-content">
             <p id="winnerText"></p>
             <button onclick="restartGame()">Új játék</button>
+            <br>
             <button onclick="window.location.href='index.html'">Vissza a főmenübe</button>
         </div>
     </div>
-    <script src="loadDifficulty.js"></script> <!-- Ez a script kezeli a nehézségi szint betöltését -->
+
+    <script>
+        // A nehézségi szint kiválasztása a query paraméterek alapján
+        const urlParams = new URLSearchParams(window.location.search);
+        const difficulty = urlParams.get('difficulty') || 'easy'; // Alapértelmezett könnyű
+
+        // Nehézségi szint kiírása
+        const modeIndicator = document.getElementById('modeIndicator');
+        modeIndicator.textContent = `Játékmód: ${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Bot`;
+
+        // Script betöltése a kiválasztott nehézség alapján
+        const script = document.createElement('script');
+        script.src = `botgame-${difficulty}.js`;
+        document.body.appendChild(script);
+    </script>
 </body>
 </html>
