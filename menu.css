@@ -29,7 +29,7 @@ body {
 
 /* Felső cím teljes középre igazítása */
 .title {
-    font-size: 2.5rem;
+    font-size: 5rem;
     font-weight: bold;
     margin: 0 auto; /* Középre igazítás */
     color: #ff6600; /* Kezdő szín */
@@ -52,13 +52,13 @@ body {
 
 /* Logó alatti, jobb oldalra igazított, pulzáló szöveg */
 .logo-subtext {
-    font-size: 1rem;
+    font-size: 1.5rem;
     font-style: italic;
     color: #666; /* Halványabb szín */
     animation: pulse 1.5s infinite; /* Pulzáló animáció */
     position: absolute;
-    top: 12%; /* A logó alatti elhelyezés */
-    left: 50%;
+    top: 17%; /* A logó alatti elhelyezés */
+    left: 55%;
     transform: rotate(-15deg); /* Balra dőlés */
     white-space: nowrap; /* Egysoros megjelenés */
 }
@@ -151,4 +151,6 @@ body {
     cursor: pointer;
     color: #ff6600;
 }
+
+
 
