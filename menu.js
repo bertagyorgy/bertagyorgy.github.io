@@ -15,3 +15,7 @@ function closeMenu() {
         menu.style.display = 'none';
     });
 }
+function toggleInfoPopup() {
+    const popup = document.getElementById("infoPopup");
+    popup.style.display = popup.style.display === "flex" ? "none" : "flex";
+}
