@@ -65,3 +65,26 @@ button {
 button:hover {
     background-color: #66ff66; /* Világosabb zöld hover hatás */
 }
+/* Játékmód kijelző a képernyő közepén */
+.mode-indicator {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+    color: #ff6600;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px black;
+}
+
+/* Kilépés gomb a bal alsó sarokban */
+.exit-button {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    font-size: 16px;
+    color: #ff6600;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
