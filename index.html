@@ -8,8 +8,11 @@
     <link rel="stylesheet" href="menu.css">
 </head>
 <body>
+  <div id="header">
+    <h1 class="title">Infinity Grid</h1> <!-- A játék neve középen fent -->
+      <p class="logo-subtext">A végtelen amőba!</p> <!-- Pulzáló, dőlt szöveg -->
+  </div>
     <div class="menu-container">
-        <h1 class="title">Infinity Grid</h1>
         <div class="menu-buttons">
             <button id="playbtn" onclick="openMenu('play')">Játék</button>
             <button onclick="openMenu('gamemodes')">Játékmódok</button>
@@ -34,6 +37,14 @@
             <p>Settings opciók (pl. hang, fényerő stb.)</p>
             <button onclick="closeMenu()">Vissza</button>
         </div>
+        <div class="info-icon" onclick="toggleInfoPopup()">i</div>
+        <div class="info-popup" id="infoPopup">
+        <div class="info-popup-content">
+            <span class="close-btn" onclick="toggleInfoPopup()">&times;</span>
+            <h2>Játék Információ</h2><br>
+            <p>Üdvözlünk az Infinity Grid játékban! A célod, hogy legyőzd az ellenfeledet egy sor, oszlop, vagy átló mentén létrehozott ötös sorozattal. Sok sikert!</p>
+        </div>
+    </div>
     </div>
     <script src="menu.js"></script>
 </body>
