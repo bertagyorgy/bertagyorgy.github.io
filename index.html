@@ -20,7 +20,7 @@
             <p>━━━━ ha esetleg új vagy ━━━━</p>
             <button onclick="openMenu('howtoplay')">Hogyan játssz?</button>
         </div>
-<!-- BÉTATESZTELÉS JEGYZŐKÖNYV -->
+        <!-- BÉTATESZTELÉS JEGYZŐKÖNYV -->
         <!-- Almenük -->
         <div id="play" class="submenu">
             <button onclick="window.location.href='botgame.html?difficulty=easy'">Könnyű</button>
@@ -39,8 +39,25 @@
             <p>Settings opciók (pl. hang, fényerő stb.)</p>
             <button onclick="closeMenu()">Vissza</button>
         </div>
+        <div id="overlay" class="overlay" onclick="closeOverlay()"></div>
+        <div id="howtoplay" class="submenu howtoplay-container">
+            <h2>Infinity Grid – Ismertető</h2>
+            <p>Az Infinity Grid egy stratégiai logikai játék, amelyben a célod, hogy öt azonos szimbólumot helyezz el egymás mellett vízszintesen, függőlegesen vagy átlósan egy 20x20-as játéktáblán. A játékos (X) a mesterséges intelligencia (O) ellen játszik, amely felismeri és blokkolja a veszélyes helyzeteket, valamint aktívan támad.</p>
+
+            <p>A játék egyszerű szabályai ellenére folyamatos figyelmet és előrelátást igényel, így valódi szellemi párbajt kínál.</p>
+
+            <h3>Tippek és stratégiák</h3>
+            <ul class="tips-list">
+                <li><strong>Tervezd előre a lépéseidet:</strong> Gondolj 3-4 lépést előre, ne hagyj nyitott helyet, amit az AI kihasználhat.</li>
+                <li><strong>Blokkolás és támadás kombinálása:</strong> Védekezés mellett próbálj új helyzeteket teremteni, hogy ezzel is próbára tedd az AI-t.</li>
+                <li><strong>Középtáji fölény kialakítása:</strong> Tartsd az irányítást a tábla központi részén, hogy több lehetőséged legyen sorokat építeni.</li>
+                <li><strong>Figyeld az AI mintáit:</strong> Azonosítsd, mikor helyez el az AI védekező vagy támadó szimbólumokat.</li>
+            </ul>
+  
+            <button onclick="closeOverlay(); closeMenu()">Vissza</button>
+        </div>
         <div class="version">
-            <p>Latest stable version: v1.38.0</p>
+            <p>Legújabb stabil verzió: v1.41.0</p>
         </div>
         <div class="info-icon" onclick="toggleInfoPopup()">i</div>
         <div class="info-popup" id="infoPopup">
