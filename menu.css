@@ -86,6 +86,9 @@ body {
     background-color: #ff6600;
     color: #000;
 }
+.menu-buttons p {
+  color: #555;
+}
 #playbtn{
     background-color: #ff6600;
     color: #000;
