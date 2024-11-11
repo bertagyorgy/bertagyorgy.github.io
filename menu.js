@@ -19,3 +19,12 @@ function toggleInfoPopup() {
     const popup = document.getElementById("infoPopup");
     popup.style.display = popup.style.display === "flex" ? "none" : "flex";
 }
+function openOverlay() {
+    document.getElementById("overlay").style.display = "block";
+    document.getElementById("howtoplay").style.display = "block";
+}
+
+function closeOverlay() {
+    document.getElementById("overlay").style.display = "none";
+    document.getElementById("howtoplay").style.display = "none";
+}
