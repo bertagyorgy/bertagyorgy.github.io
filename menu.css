@@ -87,8 +87,13 @@ body {
     background-color: #ff6600;
     color: #000;
 }
+
 .menu-buttons p {
   color: #555;
+}
+
+.menu-buttons button:hover .text{
+  display: none;
 }
 #playbtn{
     background-color: #ff6600;
@@ -96,10 +101,6 @@ body {
 }
 #playbtn:hover{
     background-color: #ff8822;
-}
-
-#playbtn:hover #text{
-  display: none;
 }
 
 .submenu {
