@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Infinity grid</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     <link rel="stylesheet" href="menu.css">
 </head>
 <body>
@@ -14,11 +15,11 @@
   </div>
     <div class="menu-container">
         <div class="menu-buttons">
-            <button id="playbtn" onclick="openMenu('play')">Játék</button>
-            <button onclick="openMenu('gamemodes')">Játékmódok</button>
-            <button onclick="openMenu('settings')">Beállítások</button>
+            <button id="playbtn" onclick="openMenu('play')"><i class="fa-solid fa-play"></i> <span id="text">Játék</span></button>
+            <button onclick="openMenu('gamemodes')"><i class="fa-solid fa-gamepad"></i> Játékmódok</button>
+            <button onclick="openMenu('settings')"><i class="fa-solid fa-gears"></i> Beállítások</button>
             <p>━━━━ ha esetleg új vagy ━━━━</p>
-            <button onclick="openMenu('howtoplay')">Hogyan játssz?</button>
+            <button onclick="openMenu('howtoplay')"><i class="fa-solid fa-question"></i> Hogyan játssz</button>
         </div>
         <!-- BÉTATESZTELÉS JEGYZŐKÖNYV -->
         <!-- Almenük -->
@@ -26,18 +27,18 @@
             <button onclick="window.location.href='botgame.html?difficulty=easy'">Könnyű</button>
             <button onclick="window.location.href='botgame.html?difficulty=medium'">Közepes</button>
             <button onclick="window.location.href='botgame.html?difficulty=hard'">Nehéz</button>
-            <button onclick="closeMenu()">Vissza</button>
+            <button onclick="closeMenu()"><i class="fa-solid fa-arrow-rotate-left"></i> Vissza</button>
         </div>
 
         <div id="gamemodes" class="submenu">
             <button onclick="window.location.href='twoplayer.html'">Kétjátékos mód</button>
             <button onclick="window.location.href='chaos.html'">Káosz mód</button>
-            <button onclick="closeMenu()">Vissza</button>
+            <button onclick="closeMenu()"><i class="fa-solid fa-arrow-rotate-left"></i> Vissza</button>
         </div>
 
         <div id="settings" class="submenu">
             <p>Settings opciók (pl. hang, fényerő stb.)</p>
-            <button onclick="closeMenu()">Vissza</button>
+            <button onclick="closeMenu()"><i class="fa-solid fa-arrow-rotate-left"></i> Vissza</button>
         </div>
         <div id="overlay" class="overlay" onclick="closeOverlay()"></div>
         <div id="howtoplay" class="submenu howtoplay-container">
@@ -54,10 +55,10 @@
                 <li><strong>Figyeld az AI mintáit:</strong> Azonosítsd, mikor helyez el az AI védekező vagy támadó szimbólumokat.</li>
             </ul>
   
-            <button onclick="closeOverlay(); closeMenu()">Vissza</button>
+            <button onclick="closeOverlay(); closeMenu()"><i class="fa-solid fa-arrow-rotate-left"></i> Vissza</button>
         </div>
         <div class="version">
-            <p>Legújabb stabil verzió: v1.41.0</p>
+            <p>Bétaverzió: v1.41.0</p>
         </div>
         <div class="info-icon" onclick="toggleInfoPopup()">i</div>
         <div class="info-popup" id="infoPopup">
