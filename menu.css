@@ -98,6 +98,10 @@ body {
     background-color: #ff8822;
 }
 
+#playbtn:hover #text{
+  display: none;
+}
+
 .submenu {
     display: none;
 }
