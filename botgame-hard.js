@@ -170,55 +170,46 @@ function checkSequence(x, y, player, length) {
 function makeBotMove() {
     let bestMove = null;
 
-    // 1. Első kör: Védekezés – ellenőrizzük a játékos nyerési lehetőségeit és blokkoljuk
+    // 1. Prioritás: Azonnali nyerés (4 egymás mellett a botnak)
     for (let x = 0; x < boardSize; x++) {
         for (let y = 0; y < boardSize; y++) {
-            if (board[x][y] === null) {
-                if (checkSequence(x, y, "X", 4)) {
-                    // Ha a játékosnak van négy egymás melletti eleme, blokkoljuk
-                    bestMove = { x, y };
-                    break;
-                }
+            if (board[x][y] === null && checkSequence(x, y, "O", 4)) {
+                bestMove = { x, y }; // Ha van lehetőség, azonnal nyerjen
+                break;
             }
         }
         if (bestMove) break;
     }
 
-    // 2. Ha nincs kritikus védekezési szükség, nézzük meg, hogy a bot tud-e létrehozni egy négyes sort
+    // 2. Prioritás: Védekezés (blokkoljuk a játékos 4-esét)
     if (!bestMove) {
         for (let x = 0; x < boardSize; x++) {
             for (let y = 0; y < boardSize; y++) {
-                if (board[x][y] === null) {
-                    if (checkSequence(x, y, "O", 4)) {
-                        // Ha a botnak van esélye négyest létrehozni, lépjen ide
-                        bestMove = { x, y };
-                        break;
-                    }
+                if (board[x][y] === null && checkSequence(x, y, "X", 4)) {
+                    bestMove = { x, y }; // Blokkoljuk a játékos győzelmét
+                    break;
                 }
             }
             if (bestMove) break;
         }
     }
 
-    // 3. Harmadik kör: Blokkoljuk a játékos háromasait, ha lehetséges
+    // 3. Támadó stratégia: Blokkoljuk a játékos 3-as sorait
     if (!bestMove) {
         for (let x = 0; x < boardSize; x++) {
             for (let y = 0; y < boardSize; y++) {
-                if (board[x][y] === null) {
-                    if (checkSequence(x, y, "X", 3)) {
-                        // Ha a játékosnak van három egymás melletti eleme, próbáljuk lezárni
-                        bestMove = { x, y };
-                        break;
-                    }
+                if (board[x][y] === null && checkSequence(x, y, "X", 3)) {
+                    bestMove = { x, y }; // Blokkoljuk a játékos 3-asát
+                    break;
                 }
             }
             if (bestMove) break;
         }
     }
 
-    // 4. Ha nincs kritikus helyzet, lépjen egy véletlenszerű üres mezőre a játékos utolsó lépésének környékén
+    // 4. Véletlenszerű lépés az utolsó játékos mozgása körül
     if (!bestMove) {
-        const { x, y } = lastPlayerMove;
+        const { x, y } = lastPlayerMove || { x: Math.floor(boardSize / 2), y: Math.floor(boardSize / 2) };
         for (let dx = -1; dx <= 1; dx++) {
             for (let dy = -1; dy <= 1; dy++) {
                 const nx = x + dx;
@@ -232,7 +223,7 @@ function makeBotMove() {
         }
     }
 
-    // Ha találtunk lépési helyet, végrehajtjuk a lépést
+    // Ha találtunk lépést, végrehajtjuk
     if (bestMove) {
         const { x, y } = bestMove;
         board[x][y] = currentPlayer;
@@ -245,6 +236,7 @@ function makeBotMove() {
         }
     }
 }
+
 
 
 // Kezdeti tábla kirajzolása
