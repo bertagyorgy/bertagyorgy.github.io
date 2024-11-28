@@ -61,7 +61,7 @@ function applyBoardSize() {
 
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("boardSizeForm");
-    let selectedGameMode = "twoplayer.html"; // Alapértelmezett játékmód
+    let selectedGameMode = ""; // Alapértelmezett játékmód
 
     // Gombok a játékmódokhoz (az eredeti menüből)
     document.querySelectorAll("#gamemodes button").forEach((button) => {
