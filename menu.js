@@ -30,6 +30,7 @@ function closeOverlay() {
 }
 
 let boardSize = 20;
+
 document.addEventListener('DOMContentLoaded', function () {
     // Az alapértelmezett rádiógomb értékének beállítása
     const defaultRadio = document.querySelector('input[name="board-size"]:checked');
@@ -45,14 +46,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+// Pályaméret frissítése
 function applyBoardSize() {
-    // Ellenőrizzük az aktuálisan kiválasztott rádiógombot
     const selectedRadio = document.querySelector('input[name="board-size"]:checked');
     if (selectedRadio) {
         boardSize = parseInt(selectedRadio.value, 10); // Frissítjük a boardSize változót
-        // let myVariable = boardSize;
-        // document.getElementById("hiddenValue").textContent = myVariable;
-        // console.log(document.getElementById("hiddenValue").textContent);
         alert(`Pályaméret frissítve: ${boardSize}x${boardSize}!`);
     } else {
         alert("Hiba: Nincs kiválasztva pályaméret!");
@@ -61,23 +59,24 @@ function applyBoardSize() {
 
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("boardSizeForm");
-    let selectedGameMode = ""; // Alapértelmezett játékmód
+    let selectedGameMode = "twoplayer.html"; // Alapértelmezett játékmód
 
-    // Gombok a játékmódokhoz (az eredeti menüből)
+    // Játékmódok gombjai
     document.querySelectorAll("#gamemodes button").forEach((button) => {
         button.addEventListener("click", () => {
             const href = button.getAttribute("onclick").match(/'(.*?)'/)[1];
-            selectedGameMode = href;
+            selectedGameMode = href; // A gomb onclick attribútumából lekérjük a megfelelő játékmód URL-t
             console.log(`Játékmód kiválasztva: ${selectedGameMode}`);
         });
     });
 
-    // A form action dinamikus frissítése
+    // Form submit esemény kezelése
     form.addEventListener("submit", (event) => {
-        form.action = selectedGameMode; // Beállítja a célt a formban
-        console.log(`Form action: ${form.action}`);
+        event.preventDefault(); // Megakadályozzuk az alapértelmezett form submit-ot
+        form.action = `${selectedGameMode}?board-size=${boardSize}`; // Dinamikusan beállítjuk a form action-értékét
+        console.log(`Form action beállítva: ${form.action}`);
+        window.location.href = form.action; // Átirányítás a megfelelő játékmódra
     });
 });
-
 
 
