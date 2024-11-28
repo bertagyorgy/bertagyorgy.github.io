@@ -57,26 +57,44 @@ function applyBoardSize() {
     }
 }
 
+document.addEventListener('DOMContentLoaded', function () {
+    // Az alapértelmezett rádiógomb értékének beállítása
+    const defaultRadio = document.querySelector('input[name="board-size"]:checked');
+    let boardSize = defaultRadio ? parseInt(defaultRadio.value, 10) : 20; // Alapértelmezett: 20
+
+    // Rádiógombok eseménykezelése
+    document.querySelectorAll('input[name="board-size"]').forEach(radio => {
+        radio.addEventListener('change', function () {
+            boardSize = parseInt(this.value, 10); // Kiválasztott érték eltárolása
+        });
+    });
+
+    // Frissítés gomb eseménykezelése
+    document.querySelector("form").addEventListener("submit", (event) => {
+        event.preventDefault(); // Megakadályozzuk a form alapértelmezett elküldését
+        window.location.href = `twoplayer.html?board-size=${boardSize}`; // URL-ben átadjuk a pályaméretet
+    });
+});
+
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("boardSizeForm");
-    let selectedGameMode = "twoplayer.html"; // Alapértelmezett játékmód
+    let selectedGameMode = ""; // Alapértelmezett játékmód
 
-    // Játékmódok gombjai
+    // Gombok a játékmódokhoz (az eredeti menüből)
     document.querySelectorAll("#gamemodes button").forEach((button) => {
         button.addEventListener("click", () => {
             const href = button.getAttribute("onclick").match(/'(.*?)'/)[1];
-            selectedGameMode = href; // A gomb onclick attribútumából lekérjük a megfelelő játékmód URL-t
+            selectedGameMode = href;
             console.log(`Játékmód kiválasztva: ${selectedGameMode}`);
         });
     });
 
-    // Form submit esemény kezelése
+    // A form action dinamikus frissítése
     form.addEventListener("submit", (event) => {
-        event.preventDefault(); // Megakadályozzuk az alapértelmezett form submit-ot
-        form.action = `${selectedGameMode}?board-size=${boardSize}`; // Dinamikusan beállítjuk a form action-értékét
-        console.log(`Form action beállítva: ${form.action}`);
-        window.location.href = form.action; // Átirányítás a megfelelő játékmódra
+        form.action = selectedGameMode; // Beállítja a célt a formban
+        console.log(`Form action: ${form.action}`);
     });
 });
+
 
 
