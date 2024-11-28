@@ -1,14 +1,17 @@
 const canvas = document.getElementById("drawingCanvas");
 const ctx = canvas.getContext("2d");
 
-const boardSize = 20;  // 20x20-as tábla
+// URL paraméterek kiolvasása
+const urlParams = new URLSearchParams(window.location.search);
+const boardSize = parseInt(urlParams.get("board-size"), 10) || 20; // Alapértelmezett: 20
+
 const cellSize = canvas.width / boardSize;
 let board = Array.from({ length: boardSize }, () => Array(boardSize).fill(null));
 let currentPlayer = "X";
 let isGameOver = false; // Játék állapotának követése
 
-// Tábla kirajzolása
-// Tábla kirajzolása
+
+//Tábla kirajzolása
 function drawBoard() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = "#ff6600"; // Rácsvonal színe
