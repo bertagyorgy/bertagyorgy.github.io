@@ -2,14 +2,9 @@ const canvas = document.getElementById("drawingCanvas");
 const ctx = canvas.getContext("2d");
 //NEHÉZ
 
-document.addEventListener("DOMContentLoaded", function () {
-    const urlParams = new URLSearchParams(window.location.search);
-    const boardSize = parseInt(urlParams.get("board-size"), 10) || 20; // Alapértelmezett: 20
 
-    console.log(`Pályaméret: ${boardSize}x${boardSize}`); // Megjeleníthetjük, ha szükséges
-
-    // Pálya beállítása a boardSize alapján...
-});
+const urlParams = new URLSearchParams(window.location.search);
+const boardSize = parseInt(urlParams.get("board-size"), 10) || 20; // Alapértelmezett: 20
 
 //let boardSize = 10;
 const cellSize = canvas.width / boardSize;
