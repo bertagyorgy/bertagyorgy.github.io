@@ -1,7 +1,11 @@
 const canvas = document.getElementById("drawingCanvas");
 const ctx = canvas.getContext("2d");
 //NEHÉZ
-let boardSize = 10;
+
+// URL paraméterek kiolvasása
+const urlParams = new URLSearchParams(window.location.search);
+const boardSize = parseInt(urlParams.get("board-size"), 10) || 20; // Alapértelmezett: 20
+//let boardSize = 10;
 const cellSize = canvas.width / boardSize;
 let board = Array.from({ length: boardSize }, () => Array(boardSize).fill(null));
 let currentPlayer = "X";
