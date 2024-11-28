@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="menu.css">
 </head>
 <body>
+  <span id="hiddenValue" style="display: none;">10</span>
   <div id="header">
     <h1 class="title">Infinity Grid</h1> <!-- A játék neve középen fent -->
       <p class="logo-subtext">A végtelen amőba!</p> <!-- Pulzáló, dőlt szöveg -->
@@ -21,7 +22,6 @@
             <p>━━━━ ha esetleg új vagy ━━━━</p>
             <button onclick="openMenu('howtoplay')"><i class="fa-solid fa-question"></i> <span class="text">Hogyan játssz</span></button>
         </div>
-        <!-- BÉTATESZTELÉS JEGYZŐKÖNYV -->
         <!-- Almenük -->
         <div id="play" class="submenu">
             <button onclick="window.location.href='botgame.html?difficulty=easy'">Könnyű</button>
@@ -38,14 +38,25 @@
 
         <div id="settings" class="submenu">
             <h2>Pályaméret</h2>
-            <div class="board-size-buttons">
-                <button id="size10" class="bbtn" onclick="setActiveButton('size10')">10x10</button>
-                <button id="size20" class="bbtn" onclick="setActiveButton('size20')">20x20</button>
-                <button id="size30" class="bbtn" onclick="setActiveButton('size30')">30x30</button>
-            </div>
+            <form name="palya" action='twoplayer.js'>
+                <div class="board-size-buttons">
+                    <input type="radio" id="size10" name="board-size" value="10">
+                    <label for="size10">10x10</label>
+                    
+                    <input type="radio" id="size20" name="board-size" value="20" checked>
+                    <label for="size20">20x20</label>
+                    
+                    <input type="radio" id="size30" name="board-size" value="30">
+                    <label for="size30">30x30</label>
+                    
+                </div>
+    
+                <input type="submit" xonclick="applyBoardSize()" value="Frissítés">
+            </form>
 
             <button onclick="closeMenu()"><i class="fa-solid fa-arrow-rotate-left"></i> Vissza</button>
         </div>
+        
         <div id="overlay" class="overlay" onclick="closeOverlay()"></div>
         <div id="howtoplay" class="submenu howtoplay-container">
             <h2>Infinity Grid – Ismertető</h2>
@@ -77,5 +88,6 @@
     </div>
     </div>
     <script src="menu.js"></script>
+    <script src="twoplayer.js"></script>
 </body>
 </html>
