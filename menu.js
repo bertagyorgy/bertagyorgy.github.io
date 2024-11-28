@@ -46,55 +46,57 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-// Pályaméret frissítése
-function applyBoardSize() {
-    const selectedRadio = document.querySelector('input[name="board-size"]:checked');
-    if (selectedRadio) {
-        boardSize = parseInt(selectedRadio.value, 10); // Frissítjük a boardSize változót
-        alert(`Pályaméret frissítve: ${boardSize}x${boardSize}!`);
-    } else {
-        alert("Hiba: Nincs kiválasztva pályaméret!");
-    }
-}
-
+// Pályaméret frissítése és URL-hez csatolása
 document.addEventListener('DOMContentLoaded', function () {
-    // Az alapértelmezett rádiógomb értékének beállítása
+    let boardSize = 20; // Alapértelmezett méret
     const defaultRadio = document.querySelector('input[name="board-size"]:checked');
-    let boardSize = defaultRadio ? parseInt(defaultRadio.value, 10) : 20; // Alapértelmezett: 20
+    if (defaultRadio) {
+        boardSize = parseInt(defaultRadio.value, 10); // Alapértelmezett beolvasása
+    }
 
-    // Rádiógombok eseménykezelése
+    // Pályaméret változtatása
     document.querySelectorAll('input[name="board-size"]').forEach(radio => {
         radio.addEventListener('change', function () {
-            boardSize = parseInt(this.value, 10); // Kiválasztott érték eltárolása
+            boardSize = parseInt(this.value, 10); // Frissítés a kiválasztott értékkel
         });
     });
 
-    // Frissítés gomb eseménykezelése
-    document.querySelector("form").addEventListener("submit", (event) => {
-        event.preventDefault(); // Megakadályozzuk a form alapértelmezett elküldését
-        window.location.href = `twoplayer.html?board-size=${boardSize}`; // URL-ben átadjuk a pályaméretet
+    // Form elküldése: pályaméret URL-hez csatolása
+    const form = document.querySelector("form");
+    form.addEventListener("submit", (event) => {
+        event.preventDefault(); // Alapértelmezett működés letiltása
+        const actionUrl = form.getAttribute('action'); // Jelenlegi form célja
+        window.location.href = `${actionUrl}?board-size=${boardSize}`; // Új URL generálása
     });
 });
 
+// Játékmód kiválasztása és navigáció
 document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("boardSizeForm");
-    let selectedGameMode = ""; // Alapértelmezett játékmód
+    let selectedGameMode = ""; // Alapértelmezett: nincs kiválasztva
 
-    // Gombok a játékmódokhoz (az eredeti menüből)
-    document.querySelectorAll("#gamemodes button").forEach((button) => {
+    // Játékmód gombok kezelése
+    document.querySelectorAll("#gamemodes button").forEach(button => {
         button.addEventListener("click", () => {
-            const href = button.getAttribute("onclick").match(/'(.*?)'/)[1];
+            const href = button.getAttribute("onclick").match(/'(.*?)'/)[1]; // URL kivonása
             selectedGameMode = href;
             console.log(`Játékmód kiválasztva: ${selectedGameMode}`);
         });
     });
 
-    // A form action dinamikus frissítése
-    form.addEventListener("submit", (event) => {
-        form.action = selectedGameMode; // Beállítja a célt a formban
-        console.log(`Form action: ${form.action}`);
-    });
+    // Ellenőrzés form elküldésekor (ha szükséges)
+    const form = document.getElementById("boardSizeForm");
+    if (form) {
+        form.addEventListener("submit", (event) => {
+            if (selectedGameMode) {
+                form.action = selectedGameMode; // Dinamikus action beállítása
+                console.log(`Form action frissítve: ${form.action}`);
+            } else {
+                console.warn("Nincs játékmód kiválasztva!");
+            }
+        });
+    }
 });
+
 
 
 
