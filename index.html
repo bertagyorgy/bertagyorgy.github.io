@@ -38,7 +38,7 @@
 
         <div id="settings" class="submenu">
             <h2>Pályaméret</h2>
-            <form name="palya" action="twoplayer.html" method="get">
+            <form id="boardSizeForm" method="get">
                 <div class="board-size-buttons">
                     <input type="radio" id="size10" name="board-size" value="10">
                     <label for="size10">10x10</label>
@@ -51,7 +51,7 @@
                     
                 </div>
     
-                <input type="submit" xonclick="applyBoardSize()" value="Frissítés">
+                <input type="submit" value="Frissítés">
             </form>
 
             <button onclick="closeMenu()"><i class="fa-solid fa-arrow-rotate-left"></i> Vissza</button>
