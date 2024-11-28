@@ -1,9 +1,15 @@
 const canvas = document.getElementById("drawingCanvas");
 const ctx = canvas.getContext("2d");
 
-// URL paraméterek kiolvasása
-const urlParams = new URLSearchParams(window.location.search);
-const boardSize = parseInt(urlParams.get("board-size"), 10) || 20; // Alapértelmezett: 20
+document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const boardSize = parseInt(urlParams.get("board-size"), 10) || 20; // Alapértelmezett: 20
+
+    console.log(`Pályaméret: ${boardSize}x${boardSize}`); // Megjeleníthetjük, ha szükséges
+
+    // Pálya beállítása a boardSize alapján...
+});
+
 
 const cellSize = canvas.width / boardSize;
 let board = Array.from({ length: boardSize }, () => Array(boardSize).fill(null));
