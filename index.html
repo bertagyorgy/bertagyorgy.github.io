@@ -329,7 +329,7 @@
           },
           scales: {
             x: { type:'linear', ticks: { callback: v=>String(v) }, grid:{ color:'rgba(2,6,23,.06)' } },
-            y: { suggestedMin: Math.min(...yValues) - 2, suggestedMax: Math.max(...yValues) + 2 }
+            y: { min: 0, max: Math.max(...adataid) * 1.2 } //solid y-axis
           },
         },
         plugins:[riemannPlugin]
