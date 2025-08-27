@@ -70,8 +70,8 @@
       flex-direction:column;
       position: relative;
       width: 100%;
-      height: 520px;       /* fix magasság */
-      min-height: 520px;
+      height: 600px;       /* fix magasság */
+      min-height: 600px;
       overflow: hidden;    /* semmi ne lógjon ki */
     }
     canvas{
@@ -126,6 +126,13 @@
   </style>
 </head>
 <body>
+  <script>
+  window.MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+    svg: { fontCache: 'global' }
+  };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
   <header>
     <div class="title">
       <div class="logo" aria-hidden="true"></div>
