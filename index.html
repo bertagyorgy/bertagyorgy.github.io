@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interaktív Integrál – Látványos bemutató</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+  <style>
+    :root{
+      --bg: #f7f7fb;
+      --card: #ffffff;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --accent1: #6d28d9; /* purple */
+      --accent2: #22c55e; /* green */
+      --accent3: #06b6d4; /* cyan */
+      --accent4: #f59e0b; /* amber */
+      --shadow: 0 10px 30px rgba(17,24,39,.08);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color:var(--ink);
+      background:
+        radial-gradient(1200px 600px at 90% -10%, rgba(109,40,217,.12), transparent),
+        radial-gradient(900px 400px at -10% 10%, rgba(34,197,94,.10), transparent),
+        var(--bg);
+    }
+    header{
+      max-width:1200px; margin:40px auto 12px; padding:0 20px;
+    }
+    .title{
+      display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+    }
+    .logo{
+      width:54px; height:54px; border-radius:16px; background:
+        conic-gradient(from 210deg, var(--accent1), var(--accent3), var(--accent2), var(--accent4), var(--accent1));
+      box-shadow: var(--shadow);
+      position:relative; overflow:hidden;
+    }
+    .logo::after{
+      content:"∫"; position:absolute; inset:0; display:grid; place-items:center; font-size:38px; color:#fff; font-weight:800;
+      text-shadow:0 2px 10px rgba(0,0,0,.25);
+    }
+    h1{font-size: clamp(24px, 3.5vw, 40px); margin:0; letter-spacing:.2px}
+    .subtitle{color:var(--muted); margin-top:4px}
+
+    .container{max-width:1200px; margin:0 auto; padding:0 20px 50px;}
+
+    .grid{
+      display:grid; grid-template-columns: 1.2fr .8fr; gap:24px; align-items:stretch;
+    }
+    @media (max-width: 980px){ .grid{ grid-template-columns: 1fr; } }
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.95));
+      backdrop-filter: blur(6px);
+      border:1px solid rgba(15,23,42,.06);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .chartCard{ padding:16px 16px 8px; display:flex; flex-direction:column; }
+    canvas{ width:100%; height:520px; }
+
+    .controls{ padding:16px; display:grid; gap:14px; grid-template-columns: repeat(12, 1fr); align-items:end;}
+    .controls .field{ grid-column: span 12; }
+    .controls .field.half{ grid-column: span 6; }
+    .controls .field.third{ grid-column: span 4; }
+    .controls .field.quarter{ grid-column: span 3; }
+    @media (max-width:980px){
+      .controls{ grid-template-columns: repeat(6, 1fr); }
+      .controls .field.half{ grid-column: span 3; }
+      .controls .field.third{ grid-column: span 6; }
+      .controls .field.quarter{ grid-column: span 3; }
+    }
+    label{ font-size:12px; color:var(--muted); display:block; margin:0 0 6px 2px; }
+    input, select{
+      width:100%; padding:12px 12px; border-radius:12px; border:1px solid rgba(15,23,42,.08); background:#fff;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.6);
+      font-size:14px; color:var(--ink);
+    }
+    .row{display:flex; gap:10px; align-items:center;}
+
+    .btn{
+      border:0; padding:12px 16px; border-radius:14px; font-weight:700; cursor:pointer;
+      background: linear-gradient(135deg, var(--accent1), var(--accent3)); color:#fff;
+      box-shadow: 0 6px 16px rgba(6,182,212,.25), inset 0 1px 0 rgba(255,255,255,.35);
+      transition: transform .07s ease, filter .2s ease;
+    }
+    .btn.secondary{ background: linear-gradient(135deg, var(--accent2), var(--accent4)); }
+    .btn:hover{ filter:brightness(1.05)}
+    .btn:active{ transform: translateY(1px) }
+
+    .sidebar{ padding:16px; display:flex; flex-direction:column; gap:16px; }
+    .section{ padding:14px; border-radius:16px; background:linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.95)); border:1px solid rgba(15,23,42,.06); box-shadow: var(--shadow); }
+    .section h3{ margin:2px 0 10px; font-size:16px }
+    .kpi{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+    .kpi .tile{ padding:12px 12px; border-radius:14px; background:linear-gradient(135deg, rgba(109,40,217,.08), rgba(6,182,212,.08)); border:1px solid rgba(15,23,42,.06); }
+    .kpi .tile h4{ margin:0 0 6px; font-size:12px; color:var(--muted) }
+    .kpi .tile .v{ margin:0; font-size:20px; font-weight:800; letter-spacing:.3px }
+
+    .legend{ font-size:12px; color:var(--muted); display:flex; gap:12px; align-items:center; flex-wrap:wrap }
+    .dot{ width:10px; height:10px; border-radius:50%; display:inline-block }
+
+    .note{ font-size:12px; color:var(--muted); }
+
+    .math{ font-size:18px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title">
+      <div class="logo" aria-hidden="true"></div>
+      <div>
+        <h1>Interaktív integrál vizualizáció</h1>
+        <div class="subtitle">Függvénygörbe, kitöltött terület \(\int_a^b f(x)\,dx\), Riemann-összegek és numerikus érték egyszerre.</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="grid">
+      <!-- CHART + CONTROLS -->
+      <div class="card">
+        <div class="controls">
+          <div class="field third">
+            <label>Függvény f(x)</label>
+            <input id="fnInput" value="sin(x) + 0.5*x" />
+          </div>
+          <div class="field quarter">
+            <label>Alsó határ a</label>
+            <input id="aInput" type="number" step="any" value="-2" />
+          </div>
+          <div class="field quarter">
+            <label>Felső határ b</label>
+            <input id="bInput" type="number" step="any" value="3" />
+          </div>
+          <div class="field quarter">
+            <label>X-tartomány (min)</label>
+            <input id="xminInput" type="number" step="any" value="-10" />
+          </div>
+          <div class="field quarter">
+            <label>X-tartomány (max)</label>
+            <input id="xmaxInput" type="number" step="any" value="10" />
+          </div>
+          <div class="field half">
+            <label>Felbontás (mintapontok a görbéhez)</label>
+            <input id="samplesInput" type="range" min="200" max="4000" value="1200" />
+          </div>
+          <div class="field quarter">
+            <button class="btn" id="updateBtn">Grafikon frissítése</button>
+          </div>
+          <div class="field quarter">
+            <button class="btn secondary" id="accumBtn">Felhalmozási animáció</button>
+          </div>
+          <div class="field half">
+            <label>Riemann-összeg téglalapok</label>
+            <div class="row">
+              <select id="riemannMethod">
+                <option value="mid">Középponti</option>
+                <option value="left">Baloldali</option>
+                <option value="right">Jobboldali</option>
+              </select>
+              <input id="riemannN" type="range" min="4" max="200" value="24" />
+              <label class="note" style="margin-left:6px">N</label>
+              <input id="toggleRects" type="checkbox" checked style="margin-left:10px"/>
+              <label class="note">mutat</label>
+            </div>
+          </div>
+        </div>
+        <div class="chartCard">
+          <div class="legend" id="legend">
+            <span><span class="dot" id="curveDot"></span> f(x) görbe</span>
+            <span><span class="dot" id="areaDot"></span> Terület a és b között</span>
+            <span><span class="dot" id="rectDot"></span> Riemann téglalapok</span>
+          </div>
+          <canvas id="chart"></canvas>
+          <div class="note" style="margin-top:6px">Tipp: adhatsz meg tetszőleges, math.js által értelmezhető kifejezést (pl. <code>e^(-x^2)</code>, <code>abs(x) + cos(3x)</code>, <code>ln(x^2+1)</code>).</div>
+        </div>
+      </div>
+
+      <!-- SIDEBAR -->
+      <div class="sidebar">
+        <div class="section">
+          <h3>Integrál értékek</h3>
+          <div class="kpi">
+            <div class="tile">
+              <h4>Definiált integrál</h4>
+              <p class="v" id="integralVal">—</p>
+            </div>
+            <div class="tile">
+              <h4>Riemann-közelítés</h4>
+              <p class="v" id="riemannVal">—</p>
+            </div>
+          </div>
+          <div class="math" style="margin-top:10px">
+            \[ I(a,b) = \int_{a}^{b} f(x)\,dx \quad\approx\quad S_N = \sum_{k=1}^{N} f(x_k^*)\,\Delta x \]
+          </div>
+        </div>
+        <div class="section">
+          <h3>Magyarázat</h3>
+          <p style="margin:0">A kitöltött, színezett sáv a \(a\) és \(b\) közti területet mutatja a görbe és az x-tengely között. A Riemann-összeg téglalapjai vizuálisan is megmutatják, hogyan közelítjük a valódi területet, miközben a <em>N</em> növelésével a közelítés egyre pontosabbá válik.</p>
+        </div>
+        <div class="section">
+          <h3>Hasznos megjegyzések</h3>
+          <ul style="margin:0 0 0 16px; padding:0 0 0 8px; color:var(--muted)">
+            <li>Ha a görbe az x-tengely alatt van, a hozzájárulás negatív.</li>
+            <li>Az „Felhalmozási animáció” gomb a felső határt időben mozgatja, így látható az \( F(t)=\int_a^t f(x)dx \) felhalmozott terület alakulása.</li>
+            <li>Az integrált itt összetett Simpson‑szabállyal számoljuk numerikusan.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- libs -->
+  <script src="https://cdn.jsdelivr.net/npm/mathjs@13.0.0/lib/browser/math.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script>
+    // ---------- Helpers ----------
+    const $ = (id) => document.getElementById(id);
+    const fmt = (x) => (Number.isFinite(x) ? (Math.abs(x) < 1e-3 || Math.abs(x) > 1e4 ? x.toExponential(4) : x.toFixed(6)) : '—');
+
+    function makeFn(expr){
+      let node;
+      try{ node = math.parse(expr); }
+      catch(e){ throw new Error('Hibás kifejezés: ' + e.message); }
+      const code = node.compile();
+      return (x) => {
+        const val = code.evaluate({x});
+        return (typeof val === 'number' && Number.isFinite(val)) ? val : NaN;
+      };
+    }
+
+    function linspace(min, max, n){
+      const a = Array(n);
+      const step = (max - min) / (n - 1);
+      for(let i=0;i<n;i++) a[i] = min + i*step;
+      return a;
+    }
+
+    function sampleFunction(f, xs){
+      return xs.map(x => {
+        const y = f(x);
+        return Number.isFinite(y) ? y : NaN;
+      });
+    }
+
+    function compositeSimpson(f, a, b, n=400){
+      if(a === b) return 0;
+      if(n % 2 === 1) n += 1; // Simpsonhoz páros kell
+      const sign = a < b ? 1 : -1;
+      const A = Math.min(a,b), B = Math.max(a,b);
+      const h = (B - A) / n;
+      let sum = f(A) + f(B);
+      for(let k=1;k<n;k++){
+        const x = A + k*h;
+        sum += (k%2===0 ? 2 : 4) * f(x);
+      }
+      return sign * (h/3) * sum;
+    }
+
+    function riemannApprox(f, a, b, N, method='mid'){
+      if(N <= 0 || a===b) return 0;
+      const sign = a < b ? 1 : -1;
+      const A = Math.min(a,b), B = Math.max(a,b);
+      const dx = (B - A)/N; let s = 0;
+      for(let i=0;i<N;i++){
+        let xstar;
+        if(method==='left') xstar = A + i*dx;
+        else if(method==='right') xstar = A + (i+1)*dx;
+        else xstar = A + (i+0.5)*dx; // mid
+        s += f(xstar) * dx;
+      }
+      return sign * s;
+    }
+
+    // ---------- Chart setup ----------
+    const ctx = document.getElementById('chart');
+
+    // Prepare gradients once chart is ready
+    let chart;
+
+    function buildChart(){
+      if(chart) chart.destroy();
+      const gradStroke = ctx.getContext('2d').createLinearGradient(0,0, ctx.width,0);
+      gradStroke.addColorStop(0, '#6d28d9');
+      gradStroke.addColorStop(1, '#06b6d4');
+      const gradFill = ctx.getContext('2d').createLinearGradient(0,0, 0,ctx.height);
+      gradFill.addColorStop(0, 'rgba(6,182,212,.18)');
+      gradFill.addColorStop(1, 'rgba(109,40,217,.08)');
+
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: { labels: [], datasets:[
+          { // main curve
+            label: 'f(x)',
+            data: [],
+            borderColor: gradStroke,
+            borderWidth: 3,
+            pointRadius: 0,
+            tension: 0.2,
+            fill: false,
+          },
+          { // area under curve on [a,b]
+            label: 'Area[a,b]',
+            data: [],
+            borderColor: 'rgba(0,0,0,0)',
+            backgroundColor: gradFill,
+            pointRadius: 0,
+            tension: 0.2,
+            fill: 'origin',
+          },
+        ]},
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {mode:'index', intersect:false},
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: { label: (ctx) => `y = ${fmt(ctx.parsed.y)}` }
+            },
+          },
+          scales: {
+            x: { type:'linear', ticks: { callback: v=>String(v) }, grid:{ color:'rgba(2,6,23,.06)' } },
+            y: { type:'linear', grid:{ color:'rgba(2,6,23,.06)' } },
+          },
+        },
+        plugins:[riemannPlugin]
+      });
+      // set legend dots to match
+      $('curveDot').style.background = '#6d28d9';
+      $('areaDot').style.background = '#06b6d4';
+      $('rectDot').style.background = '#22c55e';
+    }
+
+    // Plugin to draw Riemann rectangles
+    const riemannPlugin = {
+      id:'riemannPlugin',
+      afterDatasetsDraw(chart, args, pluginOptions){
+        const show = $('toggleRects').checked;
+        if(!show) return;
+        const N = parseInt($('riemannN').value,10);
+        const method = $('riemannMethod').value;
+        const a = parseFloat($('aInput').value);
+        const b = parseFloat($('bInput').value);
+        const expr = $('fnInput').value;
+        let f; try{ f = makeFn(expr); }catch{ return; }
+
+        const xScale = chart.scales.x; const yScale = chart.scales.y;
+        const A = Math.min(a,b), B = Math.max(a,b);
+        const dx = (B - A)/N;
+        const ctx = chart.ctx; ctx.save();
+        ctx.globalAlpha = .28;
+        ctx.fillStyle = '#22c55e';
+        ctx.strokeStyle = 'rgba(34, 197, 94, .8)';
+        for(let i=0;i<N;i++){
+          let xstar;
+          if(method==='left') xstar = A + i*dx;
+          else if(method==='right') xstar = A + (i+1)*dx;
+          else xstar = A + (i+0.5)*dx;
+          const height = f(xstar);
+          const x1 = xScale.getPixelForValue(A + i*dx);
+          const x2 = xScale.getPixelForValue(A + (i+1)*dx);
+          const y0 = yScale.getPixelForValue(0);
+          const yH = yScale.getPixelForValue(height);
+          const w = x2 - x1;
+          const rectY = Math.min(y0, yH);
+          const rectH = Math.abs(yH - y0);
+          // Only draw if finite
+          if(Number.isFinite(rectY) && Number.isFinite(rectH)){
+            ctx.fillRect(x1, rectY, w, rectH);
+            ctx.globalAlpha = .65; ctx.strokeRect(x1, rectY, w, rectH); ctx.globalAlpha = .28;
+          }
+        }
+        ctx.restore();
+      }
+    };
+
+    // ---------- Update logic ----------
+    function update(){
+      const expr = $('fnInput').value;
+      let f;
+      try{ f = makeFn(expr); }
+      catch(e){ alert(e.message); return; }
+
+      const a = parseFloat($('aInput').value);
+      const b = parseFloat($('bInput').value);
+      const xmin = parseFloat($('xminInput').value);
+      const xmax = parseFloat($('xmaxInput').value);
+      const n = parseInt($('samplesInput').value,10);
+
+      const xs = linspace(xmin, xmax, n);
+      const ys = sampleFunction(f, xs);
+
+      // area dataset: mask outside [a,b]
+      const A = Math.min(a,b), B = Math.max(a,b);
+      const yArea = xs.map((x,i)=> (x>=A && x<=B) ? ys[i] : NaN);
+
+      chart.data.labels = xs;
+      chart.data.datasets[0].data = xs.map((x,i)=>({x, y: ys[i]}));
+      chart.data.datasets[1].data = xs.map((x,i)=>({x, y: yArea[i]}));
+
+      chart.update();
+
+      // KPIs
+      const I = compositeSimpson(f, a, b, 600);
+      const R = riemannApprox(f, a, b, parseInt($('riemannN').value,10), $('riemannMethod').value);
+      $('integralVal').textContent = fmt(I);
+      $('riemannVal').textContent = fmt(R);
+
+      // MathJax re-render (if present)
+      if(window.MathJax && MathJax.typeset){ MathJax.typeset(); }
+    }
+
+    // Accumulation animation (sweep upper limit)
+    let anim;
+    function animateAccum(){
+      if(anim){ cancelAnimationFrame(anim); anim = null; }
+      const a = parseFloat($('aInput').value);
+      const b = parseFloat($('bInput').value);
+      const expr = $('fnInput').value;
+      let f; try{ f = makeFn(expr); }catch(e){ alert(e.message); return; }
+
+      const A = Math.min(a,b), B = Math.max(a,b);
+      const dir = (b>=a) ? 1 : -1;
+      const duration = 2000; // ms
+      const start = performance.now();
+
+      const xs = chart.data.labels;
+      const ysFull = chart.data.datasets[0].data.map(p=>p.y);
+
+      function frame(t){
+        const u = Math.min(1, (t - start)/duration);
+        const cutoff = A + (B-A)*u;
+        chart.data.datasets[1].data = xs.map((x,i)=>({x, y: (x>=A && x<=cutoff) ? ysFull[i] : NaN}));
+        chart.update('none');
+        if(u<1) anim = requestAnimationFrame(frame);
+      }
+      anim = requestAnimationFrame(frame);
+    }
+
+    // ---------- Wire UI ----------
+    $('updateBtn').addEventListener('click', update);
+    $('accumBtn').addEventListener('click', animateAccum);
+    ['samplesInput','riemannN','riemannMethod','toggleRects','aInput','bInput','fnInput','xminInput','xmaxInput']
+      .forEach(id => $(id).addEventListener('input', ()=>{
+        // live updates for most controls
+        if(id==='accumBtn') return; // no-op
+        update();
+      }));
+
+    // Init
+    buildChart();
+    update();
+  </script>
+
+  <!-- MathJax for pretty formulas (optional, loads last) -->
+  <script>
+    window.MathJax = { tex: { inlineMath: [['\\(','\\)'], ['$', '$']] } };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</body>
+</html>
