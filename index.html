@@ -12,10 +12,10 @@
       --card: #ffffff;
       --ink: #0f172a;
       --muted: #64748b;
-      --accent1: #6d28d9; /* purple */
-      --accent2: #22c55e; /* green */
-      --accent3: #06b6d4; /* cyan */
-      --accent4: #f59e0b; /* amber */
+      --accent1: #6d28d9;
+      --accent2: #22c55e;
+      --accent3: #06b6d4;
+      --accent4: #f59e0b;
       --shadow: 0 10px 30px rgba(17,24,39,.08);
       --radius: 18px;
     }
@@ -64,8 +64,21 @@
       box-shadow: var(--shadow);
     }
 
-    .chartCard{ padding:16px 16px 8px; display:flex; flex-direction:column; }
-    canvas{ width:100%; height:520px; }
+    .chartCard{
+      padding:16px 16px 8px;
+      display:flex;
+      flex-direction:column;
+      position: relative;
+      width: 100%;
+      height: 520px;       /* fix magasság */
+      min-height: 520px;
+      overflow: hidden;    /* semmi ne lógjon ki */
+    }
+    canvas{
+      display:block;       /* block elem, ne csússzon */
+      width:100% !important;
+      height:100% !important;
+    }
 
     .controls{ padding:16px; display:grid; gap:14px; grid-template-columns: repeat(12, 1fr); align-items:end;}
     .controls .field{ grid-column: span 12; }
@@ -125,7 +138,6 @@
 
   <div class="container">
     <div class="grid">
-      <!-- CHART + CONTROLS -->
       <div class="card">
         <div class="controls">
           <div class="field third">
@@ -184,7 +196,6 @@
         </div>
       </div>
 
-      <!-- SIDEBAR -->
       <div class="sidebar">
         <div class="section">
           <h3>Integrál értékek</h3>
@@ -218,253 +229,70 @@
     </div>
   </div>
 
-  <!-- libs -->
   <script src="https://cdn.jsdelivr.net/npm/mathjs@13.0.0/lib/browser/math.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <script>
-    // ---------- Helpers ----------
     const $ = (id) => document.getElementById(id);
     const fmt = (x) => (Number.isFinite(x) ? (Math.abs(x) < 1e-3 || Math.abs(x) > 1e4 ? x.toExponential(4) : x.toFixed(6)) : '—');
 
     function makeFn(expr){
       let node;
-      try{ node = math.parse(expr); }
-      catch(e){ throw new Error('Hibás kifejezés: ' + e.message); }
+      try{ node = math.parse(expr); }catch(e){ throw new Error('Hibás kifejezés: ' + e.message); }
       const code = node.compile();
-      return (x) => {
-        const val = code.evaluate({x});
-        return (typeof val === 'number' && Number.isFinite(val)) ? val : NaN;
-      };
+      return (x) => { const val = code.evaluate({x}); return (typeof val==='number'&&Number.isFinite(val))?val:NaN; };
     }
+    function linspace(min,max,n){ const a=Array(n); const step=(max-min)/(n-1); for(let i=0;i<n;i++) a[i]=min+i*step; return a;}
+    function sampleFunction(f,xs){ return xs.map(x=>{const y=f(x); return Number.isFinite(y)?y:NaN;});}
+    function compositeSimpson(f,a,b,n=400){ if(a===b) return 0; if(n%2===1) n+=1; const sign=a<b?1:-1; const A=Math.min(a,b),B=Math.max(a,b); const h=(B-A)/n; let sum=f(A)+f(B); for(let k=1;k<n;k++){const x=A+k*h; sum+= (k%2===0?2:4)*f(x);} return sign*(h/3)*sum;}
+    function riemannApprox(f,a,b,N,method='mid'){ if(N<=0||a===b) return 0; const sign=a<b?1:-1; const A=Math.min(a,b),B=Math.max(a,b); const dx=(B-A)/N; let s=0; for(let i=0;i<N;i++){let xstar; if(method==='left') xstar=A+i*dx; else if(method==='right') xstar=A+(i+1)*dx; else xstar=A+(i+0.5)*dx; s+=f(xstar)*dx;} return sign*s;}
 
-    function linspace(min, max, n){
-      const a = Array(n);
-      const step = (max - min) / (n - 1);
-      for(let i=0;i<n;i++) a[i] = min + i*step;
-      return a;
-    }
-
-    function sampleFunction(f, xs){
-      return xs.map(x => {
-        const y = f(x);
-        return Number.isFinite(y) ? y : NaN;
-      });
-    }
-
-    function compositeSimpson(f, a, b, n=400){
-      if(a === b) return 0;
-      if(n % 2 === 1) n += 1; // Simpsonhoz páros kell
-      const sign = a < b ? 1 : -1;
-      const A = Math.min(a,b), B = Math.max(a,b);
-      const h = (B - A) / n;
-      let sum = f(A) + f(B);
-      for(let k=1;k<n;k++){
-        const x = A + k*h;
-        sum += (k%2===0 ? 2 : 4) * f(x);
-      }
-      return sign * (h/3) * sum;
-    }
-
-    function riemannApprox(f, a, b, N, method='mid'){
-      if(N <= 0 || a===b) return 0;
-      const sign = a < b ? 1 : -1;
-      const A = Math.min(a,b), B = Math.max(a,b);
-      const dx = (B - A)/N; let s = 0;
-      for(let i=0;i<N;i++){
-        let xstar;
-        if(method==='left') xstar = A + i*dx;
-        else if(method==='right') xstar = A + (i+1)*dx;
-        else xstar = A + (i+0.5)*dx; // mid
-        s += f(xstar) * dx;
-      }
-      return sign * s;
-    }
-
-    // ---------- Chart setup ----------
-    const ctx = document.getElementById('chart');
-
-    // Prepare gradients once chart is ready
+    const ctx=$('chart');
     let chart;
-
-    function buildChart(){
-      if(chart) chart.destroy();
-      const gradStroke = ctx.getContext('2d').createLinearGradient(0,0, ctx.width,0);
-      gradStroke.addColorStop(0, '#6d28d9');
-      gradStroke.addColorStop(1, '#06b6d4');
-      const gradFill = ctx.getContext('2d').createLinearGradient(0,0, 0,ctx.height);
-      gradFill.addColorStop(0, 'rgba(6,182,212,.18)');
-      gradFill.addColorStop(1, 'rgba(109,40,217,.08)');
-
-      chart = new Chart(ctx, {
-        type: 'line',
-        data: { labels: [], datasets:[
-          { // main curve
-            label: 'f(x)',
-            data: [],
-            borderColor: gradStroke,
-            borderWidth: 3,
-            pointRadius: 0,
-            tension: 0.2,
-            fill: false,
-          },
-          { // area under curve on [a,b]
-            label: 'Area[a,b]',
-            data: [],
-            borderColor: 'rgba(0,0,0,0)',
-            backgroundColor: gradFill,
-            pointRadius: 0,
-            tension: 0.2,
-            fill: 'origin',
-          },
-        ]},
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          interaction: {mode:'index', intersect:false},
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              callbacks: { label: (ctx) => `y = ${fmt(ctx.parsed.y)}` }
-            },
-          },
-          scales: {
-            x: { type:'linear', ticks: { callback: v=>String(v) }, grid:{ color:'rgba(2,6,23,.06)' } },
-            y: { min: -10, max: 10, ticks: { stepSize: 1} }
-          },
-        },
-        plugins:[riemannPlugin]
-      });
-      // set legend dots to match
-      $('curveDot').style.background = '#6d28d9';
-      $('areaDot').style.background = '#06b6d4';
-      $('rectDot').style.background = '#22c55e';
-    }
-
-    // Plugin to draw Riemann rectangles
     const riemannPlugin = {
       id:'riemannPlugin',
-      afterDatasetsDraw(chart, args, pluginOptions){
-        const show = $('toggleRects').checked;
-        if(!show) return;
-        const N = parseInt($('riemannN').value,10);
-        const method = $('riemannMethod').value;
-        const a = parseFloat($('aInput').value);
-        const b = parseFloat($('bInput').value);
-        const expr = $('fnInput').value;
-        let f; try{ f = makeFn(expr); }catch{ return; }
-
-        const xScale = chart.scales.x; const yScale = chart.scales.y;
-        const A = Math.min(a,b), B = Math.max(a,b);
-        const dx = (B - A)/N;
-        const ctx = chart.ctx; ctx.save();
-        ctx.globalAlpha = .28;
-        ctx.fillStyle = '#22c55e';
-        ctx.strokeStyle = 'rgba(34, 197, 94, .8)';
-        for(let i=0;i<N;i++){
-          let xstar;
-          if(method==='left') xstar = A + i*dx;
-          else if(method==='right') xstar = A + (i+1)*dx;
-          else xstar = A + (i+0.5)*dx;
-          const height = f(xstar);
-          const x1 = xScale.getPixelForValue(A + i*dx);
-          const x2 = xScale.getPixelForValue(A + (i+1)*dx);
-          const y0 = yScale.getPixelForValue(0);
-          const yH = yScale.getPixelForValue(height);
-          const w = x2 - x1;
-          const rectY = Math.min(y0, yH);
-          const rectH = Math.abs(yH - y0);
-          // Only draw if finite
-          if(Number.isFinite(rectY) && Number.isFinite(rectH)){
-            ctx.fillRect(x1, rectY, w, rectH);
-            ctx.globalAlpha = .65; ctx.strokeRect(x1, rectY, w, rectH); ctx.globalAlpha = .28;
-          }
-        }
-        ctx.restore();
+      afterDatasetsDraw(chart){ 
+        const show=$('toggleRects').checked; if(!show) return;
+        const N=parseInt($('riemannN').value,10), method=$('riemannMethod').value;
+        const a=parseFloat($('aInput').value), b=parseFloat($('bInput').value);
+        let f; try{ f=makeFn($('fnInput').value);}catch{return;}
+        const xScale=chart.scales.x, yScale=chart.scales.y;
+        const A=Math.min(a,b),B=Math.max(a,b);
+        const dx=(B-A)/N;
+        const c=chart.ctx; c.save(); c.globalAlpha=.28; c.fillStyle='#22c55e'; c.strokeStyle='rgba(34,197,94,.8)';
+        for(let i=0;i<N;i++){ let xstar; if(method==='left')xstar=A+i*dx; else if(method==='right')xstar=A+(i+1)*dx; else xstar=A+(i+0.5)*dx;
+        const h=f(xstar), x1=xScale.getPixelForValue(A+i*dx), x2=xScale.getPixelForValue(A+(i+1)*dx), y0=yScale.getPixelForValue(0), yH=yScale.getPixelForValue(h); const w=x2-x1, rectY=Math.min(y0,yH), rectH=Math.abs(yH-y0);
+        if(Number.isFinite(rectY)&&Number.isFinite(rectH)){c.fillRect(x1,rectY,w,rectH); c.globalAlpha=.65;c.strokeRect(x1,rectY,w,rectH);c.globalAlpha=.28;} } c.restore();
       }
     };
 
-    // ---------- Update logic ----------
+    chart=new Chart(ctx,{
+      type:'line',
+      data:{datasets:[
+        {label:'f(x)', data:[], borderColor:'#6d28d9', borderWidth:2, fill:false, pointRadius:0},
+        {label:'Terület', data:[], borderColor:'#22c55e', backgroundColor:'rgba(34,197,94,.3)', fill:'+1', pointRadius:0}
+      ]},
+      options:{animation:false, responsive:true, interaction:{mode:'index',intersect:false}, scales:{x:{type:'linear'},y:{beginAtZero:true}}}, plugins:[riemannPlugin]
+    });
+
     function update(){
-      const expr = $('fnInput').value;
-      let f;
-      try{ f = makeFn(expr); }
-      catch(e){ alert(e.message); return; }
-
-      const a = parseFloat($('aInput').value);
-      const b = parseFloat($('bInput').value);
-      const xmin = parseFloat($('xminInput').value);
-      const xmax = parseFloat($('xmaxInput').value);
-      const n = parseInt($('samplesInput').value,10);
-
-      const xs = linspace(xmin, xmax, n);
-      const ys = sampleFunction(f, xs);
-
-      // area dataset: mask outside [a,b]
-      const A = Math.min(a,b), B = Math.max(a,b);
-      const yArea = xs.map((x,i)=> (x>=A && x<=B) ? ys[i] : NaN);
-
-      chart.data.labels = xs;
-      chart.data.datasets[0].data = xs.map((x,i)=>({x, y: ys[i]}));
-      chart.data.datasets[1].data = xs.map((x,i)=>({x, y: yArea[i]}));
-
+      const expr=$('fnInput').value; let f;
+      try{ f=makeFn(expr); }catch(e){ chart.data.datasets[0].data=[]; chart.data.datasets[1].data=[]; chart.update(); alert(e.message); return; }
+      const a=parseFloat($('aInput').value), b=parseFloat($('bInput').value);
+      const xmin=parseFloat($('xminInput').value), xmax=parseFloat($('xmaxInput').value), n=parseInt($('samplesInput').value,10);
+      const xs=linspace(xmin,xmax,n), ys=sampleFunction(f,xs), A=Math.min(a,b),B=Math.max(a,b);
+      const yArea=xs.map((x,i)=>(x>=A&&x<=B)?ys[i]:NaN);
+      chart.data.labels=xs;
+      chart.data.datasets[0].data=xs.map((x,i)=>({x,y:ys[i]}));
+      chart.data.datasets[1].data=xs.map((x,i)=>({x,y:yArea[i]}));
       chart.update();
-
-      // KPIs
-      const I = compositeSimpson(f, a, b, 600);
-      const R = riemannApprox(f, a, b, parseInt($('riemannN').value,10), $('riemannMethod').value);
-      $('integralVal').textContent = fmt(I);
-      $('riemannVal').textContent = fmt(R);
-
-      // MathJax re-render (if present)
-      if(window.MathJax && MathJax.typeset){ MathJax.typeset(); }
+      $('integralVal').textContent=fmt(compositeSimpson(f,a,b,600));
+      $('riemannVal').textContent=fmt(riemannApprox(f,a,b,parseInt($('riemannN').value,10),$('riemannMethod').value));
+      if(window.MathJax&&MathJax.typeset) MathJax.typeset();
     }
 
-    // Accumulation animation (sweep upper limit)
-    let anim;
-    function animateAccum(){
-      if(anim){ cancelAnimationFrame(anim); anim = null; }
-      const a = parseFloat($('aInput').value);
-      const b = parseFloat($('bInput').value);
-      const expr = $('fnInput').value;
-      let f; try{ f = makeFn(expr); }catch(e){ alert(e.message); return; }
-
-      const A = Math.min(a,b), B = Math.max(a,b);
-      const dir = (b>=a) ? 1 : -1;
-      const duration = 2000; // ms
-      const start = performance.now();
-
-      const xs = chart.data.labels;
-      const ysFull = chart.data.datasets[0].data.map(p=>p.y);
-
-      function frame(t){
-        const u = Math.min(1, (t - start)/duration);
-        const cutoff = A + (B-A)*u;
-        chart.data.datasets[1].data = xs.map((x,i)=>({x, y: (x>=A && x<=cutoff) ? ysFull[i] : NaN}));
-        chart.update('none');
-        if(u<1) anim = requestAnimationFrame(frame);
-      }
-      anim = requestAnimationFrame(frame);
-    }
-
-    // ---------- Wire UI ----------
-    $('updateBtn').addEventListener('click', update);
-    $('accumBtn').addEventListener('click', animateAccum);
-    ['samplesInput','riemannN','riemannMethod','toggleRects','aInput','bInput','fnInput','xminInput','xmaxInput']
-      .forEach(id => $(id).addEventListener('input', ()=>{
-        // live updates for most controls
-        if(id==='accumBtn') return; // no-op
-        //update();
-      }));
-
-    // Init
-    buildChart();
-    update();
+    $('updateBtn').addEventListener('click',update);
+    ['fnInput','aInput','bInput','xminInput','xmaxInput','samplesInput','riemannMethod','riemannN','toggleRects'].forEach(id=>$(id).addEventListener('input',update));
+    window.addEventListener('load',update);
   </script>
-
-  <!-- MathJax for pretty formulas (optional, loads last) -->
-  <script>
-    window.MathJax = { tex: { inlineMath: [['\\(','\\)'], ['$', '$']] } };
-  </script>
-  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </body>
 </html>
